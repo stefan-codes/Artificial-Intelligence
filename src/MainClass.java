@@ -4,12 +4,15 @@ import java.util.*;
 public class MainClass {
 static long startTime = System.nanoTime();
 
-static String tempFileName = "C:\\Users\\stefa\\Downloads\\caverns files\\input4-100.cav"; 
+static String tempFileName = "C:\\Users\\stefa\\Documents\\Workspace\\ArtificialIntelligenceCoursework\\cavernFiles\\input6-1000.cav"; 
+static String outputName = "blankName";
 
 	public static void main(String[] args) {
 		// If a file is specified, update the name
  		if(args.length == 1) {
-			tempFileName = args[0];
+ 			String temp[] = args[0].split("\\.");
+ 			outputName = temp[0] + ".csn";
+			tempFileName = args[0] + ".cav";
 		}
 		// Search for a path
 		aStar(readFile(tempFileName));
@@ -61,8 +64,18 @@ static String tempFileName = "C:\\Users\\stefa\\Downloads\\caverns files\\input4
 	}
 
 	// Write the answer to a file
-	private static void writeFile(String answer) {
-		//TODO: actually write it to a file!
+	private static void writeFile(String answer){
+		try 
+		{
+			FileWriter fileWriter = new FileWriter(outputName);
+			fileWriter.write(answer);
+			fileWriter.close();
+		}
+		catch (IOException e)
+		{
+			System.out.println("Couldnt write the file!");
+		}
+	    
 		System.out.println(answer);
 	}
 
@@ -70,6 +83,7 @@ static String tempFileName = "C:\\Users\\stefa\\Downloads\\caverns files\\input4
 	private static void aStar(ArrayList<Integer> instructions) {
 		String answer = "0";
 		ArrayList<Integer> finalPath = new ArrayList<Integer>();
+		float pathDistance;
 		// Set myMap as reference to the map
 		Cave[] arrayOfCaves = loadData(instructions);
 		// Evaluated caves - empty at start
@@ -88,7 +102,10 @@ static String tempFileName = "C:\\Users\\stefa\\Downloads\\caverns files\\input4
 			
 			// If we are at the destination
 			if (currentCave.heuristicCost == 0) {
+				pathDistance = currentCave.pathCost;
+				System.out.println(pathDistance);
 				while(currentCave.cameFrom != null) {
+					
 					finalPath.add(currentCave.id);
 					currentCave = currentCave.cameFrom;
 				}
@@ -130,6 +147,9 @@ static String tempFileName = "C:\\Users\\stefa\\Downloads\\caverns files\\input4
 				caveToEvaluate.cameFrom = currentCave;
 				caveToEvaluate.pathCost = suggestedNewPath;
 				caveToEvaluate.updateValue();
+				Cave temp = caveToEvaluate;
+				openSet.remove(temp);
+				openSet.add(temp);
 				
 	        }
 		}
